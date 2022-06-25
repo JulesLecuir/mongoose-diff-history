@@ -309,6 +309,15 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
             .then(() => next())
             .catch(next);
     });
+    
+    schema.pre('updateMany', function (next) {
+        if (checkRequired(opts, this)) {
+            return next();
+        }
+        saveDiffs(this, opts)
+            .then(() => next())
+            .catch(next);
+    });
 
     schema.pre('remove', function (next) {
         if (checkRequired(opts, this)) {
