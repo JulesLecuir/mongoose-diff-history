@@ -276,7 +276,8 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
                     this,
                     original,
                     this.toObject({ depopulate: true }),
-                    opts
+                  opts,
+                  {options: this.$__.saveOptions}
                 );
             })
             .then(() => next())
@@ -299,6 +300,15 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
         saveDiffs(this, opts)
             .then(() => next())
             .catch(next);
+    });
+
+    schema.pre('create', function (next) {
+        if (checkRequired(opts, this)) {
+            return next();
+        }
+        saveDiffs(this, opts)
+          .then(() => next())
+          .catch(next);
     });
 
     schema.pre('updateOne', function (next) {
