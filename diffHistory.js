@@ -36,11 +36,17 @@ function saveDiffObject(currentObject, original, updated, opts, queryObject) {
     const { __user: user, __reason: reason, __session: session } =
         (queryObject && queryObject.options) || currentObject;
 
-    let diff = diffPatcher.diff(
-        JSON.parse(JSON.stringify(original)),
-        JSON.parse(JSON.stringify(updated))
-    );
-
+    let diff;
+    try {
+        diff = diffPatcher.diff(
+          JSON.parse(JSON.stringify(original)),
+          JSON.parse(JSON.stringify(updated))
+        );
+    } catch (e) {
+        console.log(e)
+        diff = {error: e.message}
+    }
+    
     if (opts.omit) {
         omit(diff, opts.omit, { cleanEmpty: true });
     }
